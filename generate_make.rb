@@ -9,7 +9,6 @@ if !File.directory?(ARGV[0])
   puts "Please enter a valid target path"
   exit(1)
 else
-  puts "target directory is " + ARGV[0]
   Dir.chdir(ARGV[0])
 end
 
@@ -19,11 +18,6 @@ $compiler_flags = Array.new
 (3..ARGV.length-1).each do |index|
   $compiler_flags.push(ARGV[index])
 end
-
-$compiler_flags.each do |flag|
-  print flag + " "
-end
-puts ""
 
 cpp_file_extension = [".cc", ".cpp", ".cxx", ".C", ".c++", ".c"]
 all_source_files = Dir["**/*"].select{|f| File.file?(f)}.select{|f| cpp_file_extension.include?(File.extname(f))}
