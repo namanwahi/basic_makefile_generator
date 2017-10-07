@@ -1,4 +1,5 @@
 require_relative 'makefile_rule'
+require_relative 'file_utils'
 if ARGV.length < 3
   puts "Please enter your format in the form: path_to_project compiler executable_name [compiler flags]"
   exit(1)
@@ -8,12 +9,12 @@ if !File.directory?(ARGV[0])
   puts "Please enter a valid target path"
   exit(1)
 else
-  puts "target directory is ARGV[0]"
+  puts "target directory is " + ARGV[0]
   Dir.chdir(ARGV[0])
 end
 
 $compiler = ARGV[1]
-$exec = ARGV[2]
+$exe = ARGV[2]
 $compiler_flags = Array.new
 (3..ARGV.length-1).each do |index|
   $compiler_flags.push(ARGV[index])
@@ -24,12 +25,14 @@ $compiler_flags.each do |flag|
 end
 puts ""
 
-cpp_file_extension = [".cc", ".cpp", ".cxx", ".C", ".c++"]
+cpp_file_extension = [".cc", ".cpp", ".cxx", ".C", ".c++", ".c"]
 all_source_files = Dir["**/*"].select{|f| File.file?(f)}.select{|f| cpp_file_extension.include?(File.extname(f))}
-
-puts all_source_files
 
 object_rule_array = Array.new
 all_source_files.each do |f|
-  object_rule_array.push(MakefileRule.new(f))
+  object_rule_array.push(ObjectMakefileRule.new(f))
 end
+
+exe_rule = ExeMakefile.new(object_rule_array, $exe)
+
+generate_makefile($compiler, $exe, $compiler_flags, object_rule_array, exe_rule)
